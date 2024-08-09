@@ -26,35 +26,55 @@ approximation of the E(C)CDF, whereas `.Axes.ecdf` is exact.
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 
-distance = results_path + '/' + file
+distance = 'data/distance_ori-PCF-BST_G4hunter_427-2018_sorted.bed'
+distance_shuffled = 'data/distance_ori-shuffled666-PCF-BST_G4hunter_427-2018_sorted.bed'
 df_distance = pd.read_table(distance,index_col=0)
+df_distance_shuffled = pd.read_table(distance_shuffled,index_col=0)
+df_distance.columns =['distance']
+df_distance = df_distance.assign(type=['ori']*len(df_distance))
+df_distance_shuffled.columns =['distance']
+df_distance_shuffled = df_distance_shuffled.assign(type=['control']*len(df_distance_shuffled))
+#print(df_distance.head())
+#print(df_distance_shuffled.head())
+frames = [df_distance, df_distance_shuffled]
+print(frames)
+distance_all = pd.concat(frames)
+print(distance_all.head())
 
-# Cumulative distributions.
-axs[0].ecdf(data, label="CDF")
-n, bins, patches = axs[0].hist(data, n_bins, density=True, histtype="step",
-                               cumulative=True, label="Cumulative histogram")
-x = np.linspace(data.min(), data.max())
-y = ((1 / (np.sqrt(2 * np.pi) * sigma)) *
-     np.exp(-0.5 * (1 / sigma * (x - mu))**2))
-y = y.cumsum()
-y /= y[-1]
-axs[0].plot(x, y, "k--", linewidth=1.5, label="Theory")
+sns.set_style('darkgrid')
 
-# Complementary cumulative distributions.
-axs[1].ecdf(data, complementary=True, label="CCDF")
-axs[1].hist(data, bins=bins, density=True, histtype="step", cumulative=-1,
-            label="Reversed cumulative histogram")
-axs[1].plot(x, 1 - y, "k--", linewidth=1.5, label="Theory")
+sns.ecdfplot(x=distance_all.distance, data=distance_all, hue='type');
+
+# fig = plt.figure(figsize=(9, 4), layout="constrained")
+# axs = fig.subplots(1, 2, sharex=True, sharey=True)
+
+
+# #Cumulative distributions.
+# axs[0].ecdf(df_distance, label="CDF")
+# n, bins, patches = axs[0].hist(df_distance, n_bins, density=True, histtype="step",cumulative=True, label="Cumulative histogram")
+# x = np.linspace(df_distance.min(), df_distance.max())
+# y = ((1 / (np.sqrt(2 * np.pi) * sigma)) *
+#      np.exp(-0.5 * (1 / sigma * (x - mu))**2))
+# y = y.cumsum()
+# y /= y[-1]
+# axs[0].plot(x, y, "k--", linewidth=1.5, label="Theory")
+
+# # Complementary cumulative distributions.
+# axs[1].ecdf(data, complementary=True, label="CCDF")
+# axs[1].hist(data, bins=bins, density=True, histtype="step", cumulative=-1,
+#             label="Reversed cumulative histogram")
+# axs[1].plot(x, 1 - y, "k--", linewidth=1.5, label="Theory")
 
 # Label the figure.
-fig.suptitle("Cumulative distributions")
-for ax in axs:
-    ax.grid(True)
-    ax.legend()
-    ax.set_xlabel("Annual rainfall (mm)")
-    ax.set_ylabel("Probability of occurrence")
-    ax.label_outer()
+# fig.suptitle("Cumulative distributions")
+# for ax in axs:
+#     ax.grid(True)
+#     ax.legend()
+#     ax.set_xlabel("Annual rainfall (mm)")
+#     ax.set_ylabel("Probability of occurrence")
+#     ax.label_outer()
 
 plt.show()
 
