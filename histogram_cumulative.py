@@ -42,10 +42,18 @@ frames = [df_distance, df_distance_shuffled]
 print(frames)
 distance_all = pd.concat(frames)
 print(distance_all.head())
-
+fig, ax = plt.subplots(figsize = (10,8))
 sns.set_style('darkgrid')
 
 sns.ecdfplot(x=distance_all.distance, data=distance_all, hue='type');
+
+print(distance_all.groupby('type')['distance'].quantile(.8))
+
+# control x and y limits
+plt.ylim(0, None)
+plt.xlim(0, 30000)
+
+plt.show()
 
 # fig = plt.figure(figsize=(9, 4), layout="constrained")
 # axs = fig.subplots(1, 2, sharex=True, sharey=True)
@@ -76,7 +84,7 @@ sns.ecdfplot(x=distance_all.distance, data=distance_all, hue='type');
 #     ax.set_ylabel("Probability of occurrence")
 #     ax.label_outer()
 
-plt.show()
+#plt.show()
 
 # %%
 #
